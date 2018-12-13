@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+
+    <link rel="stylesheet" href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="./css/site.css" />
+
+    <script type="text/javascript" src="./lib/jquery/dist/jquery-3.3.1.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+    <script type="text/javascript" src="./lib/signalr/dist/browser/signalr.js"></script>
+    <script type="text/javascript" src="./js/site.js"></script>
+</head>
+
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="index.html">Controller</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h2 style="text-align:center;font-size:48px;font-weight:800;padding-bottom:30px;padding-top:50px;text-transform:uppercase, full-width, capitalize;">Controller</h2>
+        <div class="col-md-4 col-md-offset-4">
+            <div class="form-group">
+                <h3 style="text-align:center;">Upper Tank</h3>
+                <div class="checkbox" style="text-align:center;">
+                    <input name="motorResp" id="toggleMotor" type="checkbox" data-toggle="toggle" data-on="Motor On" data-off="Motor Off" data-onstyle="success" data-offstyle="danger" />
+                    <p class="help-block" id="console-event-motor"></p>
+                </div>
+                <div style="display: flex; justify-content: center; align-items: center;">
+                    <div class="tank">
+                        <div id="upper_tank" class="water"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-md-offset-4">
+            <div class="form-group">
+                <h3 style="text-align:center;">Lower Tank</h3>
+                <div class="checkbox" style="text-align:center;">
+                    <input name="boosterResp" id="toggleBooster" type="checkbox" data-toggle="toggle" data-on="Booster On" data-off="Booster Off" data-onstyle="success" data-offstyle="danger" />
+                    <p class="help-block" id="console-event-booster"></p>
+                    <div style="display: flex; justify-content: center; align-items: center;">
+                        <div class="tank">
+                            <div id="lower_tank" class="water"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <br />
+        <div class="col-md-4 col-md-offset-4">
+            <div style="text-align:center;">
+                <button id="Submit" class="btn btn-default">Submit</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
