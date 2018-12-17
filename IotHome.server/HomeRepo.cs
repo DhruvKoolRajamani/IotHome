@@ -2,7 +2,7 @@ using IotHome.server.Hubs;
 
 namespace IotHome.server
 {
-    public class HomeHub : IHomeHub
+    public class HomeRepo : IHomeRepo
     {
         //private readonly GpioController _controller = new GpioController();
         //private GpioOpenStatus openStatus;
@@ -12,7 +12,7 @@ namespace IotHome.server
         private readonly int motorPinId = 17;
         private readonly int boosterPinId = 18;
 
-        public HomeHub()
+        public HomeRepo()
         {
             _motorState = MotorState;
             _boosterState = BoosterState;
@@ -30,7 +30,7 @@ namespace IotHome.server
             set => _boosterState = value;
         }
 
-        void IHomeHub.Check()
+        void IHomeRepo.Check()
         {
             //if (_controller.TryOpenPin(17, gpioPin.SharingMode, out GpioPin motorPin, out openStatus))
             //{
@@ -64,7 +64,7 @@ namespace IotHome.server
             //}
         }
 
-        void IHomeHub.Add(bool motorState, bool boosterState)
+        void IHomeRepo.Add(bool motorState, bool boosterState)
         {
             //if (_controller.TryOpenPin(gpioPinId, gpioPin.SharingMode, out GpioPin pin, out openStatus))
             //{

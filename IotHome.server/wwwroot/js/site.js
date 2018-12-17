@@ -5,10 +5,19 @@
 
 "use strict";
 
-$(function () {
+$( document ).ready(function () {
+
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/app")
+        .configureLogging(signalR.LogLevel.Information)
         .build();
+
+    $("#motor_toggle").hide();
+    $("#booster_toggle").hide();
+    $("#submit_toggle").hide();
+
+    var iSubmit = 0;
+    var onSubmitted = false;
 
     var toggleMotor = $("#toggleMotor");
     var toggleBooster = $("#toggleBooster");
@@ -19,22 +28,33 @@ $(function () {
     var boosterState = false;
 
     connection.on("status", function (_motorState, _boosterState) {
-        $(toggleMotor).prop('checked', _motorState).change();
         motorState = _motorState;
-        $(toggleBooster).prop('checked', _boosterState).change();
         boosterState = _boosterState;
-        alert("Motor/Booster Status Changed");
+
+        $(toggleBooster).prop('checked', _boosterState).change();
+        $(toggleMotor).prop('checked', _motorState).change();
+        
+        if(iSubmit == 1){
+            alert("Motor/Booster Status Changed");
+        }
+    });
+
+    $('#Load').click(function () {
+        $("#motor_toggle").show();
+        $("#booster_toggle").show();
+        $("#submit_toggle").show();
+
+        connection.invoke("Init").catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        $("#Load").hide();
+        iSubmit = 0;
     });
 
     connection.start().catch(function (err) {
         return console.error(err.toString());
     });
-
-    // if (connection.start()) {
-    //     connection.invoke("Init").catch(function (err) {
-    //         return console.error(err.toString());
-    //     });
-    // }
 
     $(toggleMotor).change(function () {
         $('#console-event-motor').html('Motor Status: ' + $(this).prop('checked'));
@@ -45,6 +65,7 @@ $(function () {
     })
 
     $('#Submit').click(function () {
+        onSubmitted = true;
         motorState = $(toggleMotor).prop('checked');
         boosterState = $(toggleBooster).prop('checked');
         // 1-ff, 2-ft, 3-tf, 4-tt
@@ -71,6 +92,7 @@ $(function () {
         else {
             alert("Error");
         }
+        iSubmit = 1;
     });
 
     document.getElementById("upper_tank").style.height = upperTankHeight.toString() + "%";

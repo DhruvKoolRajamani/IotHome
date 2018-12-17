@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace IotHome.server.Hubs
 {
-    public interface IHomeHub
+    public interface IHomeRepo
     {
         bool MotorState { get; set; }
         bool BoosterState { get; set; }
@@ -16,20 +16,19 @@ namespace IotHome.server.Hubs
         private bool motorState;
         private bool boosterState;
 
-        private readonly IHomeHub _repository;
+        private readonly IHomeRepo _repository;
 
         public bool MotorState { get => motorState; set => motorState = value; }
         public bool BoosterState { get => boosterState; set => boosterState = value; }
 
-        public IotHomeHub(IHomeHub repository)
+        public IotHomeHub(IHomeRepo repository)
         {
             _repository = repository;
-            motorState = repository.MotorState;
-            boosterState = repository.BoosterState;
-            _repository.Check();
+            _repository.MotorState = repository.MotorState;
+            _repository.BoosterState = repository.BoosterState;
         }
 
-        public async Task Init() => await Clients.All.SendAsync("status", _repository.MotorState, _repository.BoosterState);// return true;
+        public async Task Init() => await Clients.Caller.SendAsync("status", _repository.MotorState, _repository.BoosterState);
 
         public async Task Controller(int stateCase)
         {
@@ -60,7 +59,7 @@ namespace IotHome.server.Hubs
                     break;
             }
 
-            await Clients.All.SendAsync("status", _repository.MotorState, _repository.BoosterState);
+            await Clients.Others.SendAsync("status", _repository.MotorState, _repository.BoosterState);
         }
     }
 }
