@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Bifrost.Devices.Gpio;
-using Bifrost.Devices.Gpio.Abstractions;
-using Bifrost.Devices.Gpio.Core;
+
+
 using IotHome.server.Hubs;
 
 namespace IotHome.server
