@@ -1,16 +1,34 @@
+using System.Collections.Generic;
+using Bifrost.Devices.Gpio;
+using Bifrost.Devices.Gpio.Abstractions;
+using Bifrost.Devices.Gpio.Core;
 using IotHome.server.Hubs;
 
 namespace IotHome.server
 {
+    public interface IHomeRepo
+    {
+        bool MotorState { get; set; }
+        bool BoosterState { get; set; }
+
+        void Add();
+        void Check();
+    }
+    
     public class HomeRepo : IHomeRepo
     {
-        //private readonly GpioController _controller = new GpioController();
-        //private GpioOpenStatus openStatus;
-        //private GpioPin gpioPin;
+        // private IGpioController _IGpioController;
+        // private GpioPin gpioPin;
 
         private bool _motorState, _boosterState;
         private readonly int motorPinId = 17;
         private readonly int boosterPinId = 18;
+
+        enum usedPins
+        {
+            MotorPin = 17,
+            BoosterPin = 18
+        }
 
         public HomeRepo()
         {
@@ -30,51 +48,19 @@ namespace IotHome.server
             set => _boosterState = value;
         }
 
-        void IHomeRepo.Check()
+        private void ReadPin()
         {
-            //if (_controller.TryOpenPin(17, gpioPin.SharingMode, out GpioPin motorPin, out openStatus))
-            //{
-            //    if (openStatus == GpioOpenStatus.PinOpened)
-            //    {
-            //        motorPin.SetDriveMode(GpioPinDriveMode.Input);
-            //        if(motorPin.Read() == GpioPinValue.High)
-            //            MotorState = true;
-            //        else
-            //            MotorState = false;
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine("Pin %d is closed", 17);
-            //    }
-            //}
-            //else if (_controller.TryOpenPin(18, gpioPin.SharingMode, out GpioPin boosterPin, out openStatus))
-            //{
-            //    if (openStatus == GpioOpenStatus.PinOpened)
-            //    {
-            //        boosterPin.SetDriveMode(GpioPinDriveMode.Input);
-            //        if (motorPin.Read() == GpioPinValue.High)
-            //            BoosterState = true;
-            //        else
-            //            BoosterState = false;
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine("Pin %d is closed", 18);
-            //    }
-            //}
+            
         }
 
-        void IHomeRepo.Add(bool motorState, bool boosterState)
+        void IHomeRepo.Check()
         {
-            //if (_controller.TryOpenPin(gpioPinId, gpioPin.SharingMode, out GpioPin pin, out openStatus))
-            //{
-            //    pin.SetDriveMode(GpioPinDriveMode.Output);
-            //    pin.Write(GpioPinValue.High);
-            //    Console.WriteLine("Opened Pin: " + gpioPinId);
-            //}
 
-            _motorState = motorState;
-            _boosterState = boosterState;
+        }
+
+        void IHomeRepo.Add()
+        {
+
         }
     }
 }

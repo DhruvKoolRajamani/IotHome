@@ -6,6 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bifrost.Devices.Gpio" Version="0.0.2" />
+    <PackageReference Include="Bifrost.Devices.Gpio.Abstractions" Version="0.0.1" />
+    <PackageReference Include="Bifrost.Devices.Gpio.Core" Version="0.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
   </ItemGroup>

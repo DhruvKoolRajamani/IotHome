@@ -68,31 +68,10 @@ $( document ).ready(function () {
         onSubmitted = true;
         motorState = $(toggleMotor).prop('checked');
         boosterState = $(toggleBooster).prop('checked');
-        // 1-ff, 2-ft, 3-tf, 4-tt
-        if ((motorState == false) && (boosterState == false)) {
-            connection.invoke("controller", 1).catch(function (err) {
-                return console.error(err.toString());
-            });
-        }
-        else if ((motorState == false) && (boosterState == true)) {
-            connection.invoke("controller", 2).catch(function (err) {
-                return console.error(err.toString());
-            });
-        }
-        else if ((motorState == true) && (boosterState == false)) {
-            connection.invoke("controller", 3).catch(function (err) {
-                return console.error(err.toString());
-            });
-        }
-        else if ((motorState == true) && (boosterState == true)) {
-            connection.invoke("controller", 4).catch(function (err) {
-                return console.error(err.toString());
-            });
-        }
-        else {
-            alert("Error");
-        }
-        iSubmit = 1;
+
+        connection.invoke("controller", motorState, boosterState).catch(function (err) {
+            return console.error(err.toString());
+        });
     });
 
     document.getElementById("upper_tank").style.height = upperTankHeight.toString() + "%";
