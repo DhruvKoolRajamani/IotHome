@@ -11,14 +11,29 @@ namespace IotHome.server.Hubs
             _repository = repository;
         }
 
-        public async Task Init() => await Clients.Caller.SendAsync("status", _repository.MotorState, _repository.BoosterState);
+        public async Task GetStates()
+        {
+            await Clients.Caller.SendAsync("Status", _repository.MotorState, _repository.BoosterState);
+        }
 
-        public async Task Controller(bool motorState, bool boosterState)
+        public async Task SetStates(bool motorState, bool boosterState)
         {
             _repository.MotorState = motorState;
             _repository.BoosterState = boosterState;
 
-            await Clients.Others.SendAsync("status", _repository.MotorState, _repository.BoosterState);
+            await Clients.Others.SendAsync("Status", _repository.MotorState, _repository.BoosterState);
+        }
+        public async Task SetTankLevels(double uppertank, double lowertank)
+        {
+            _repository.UpperTank = uppertank;
+            _repository.LowerTank = lowertank;
+
+            await Clients.Caller.SendAsync("Levels", _repository.UpperTank, _repository.LowerTank);
+        }
+
+        public async Task GetTankLevels()
+        {
+            await Clients.Caller.SendAsync("Levels", _repository.UpperTank, _repository.LowerTank);
         }
     }
 }

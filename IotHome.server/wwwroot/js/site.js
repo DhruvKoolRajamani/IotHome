@@ -16,14 +16,11 @@ $( document ).ready(function () {
     $("#booster_toggle").hide();
     $("#submit_toggle").hide();
 
-    var iSubmit = 0;
-    var onSubmitted = false;
-
     var toggleMotor = $("#toggleMotor");
     var toggleBooster = $("#toggleBooster");
 
-    var upperTankHeight = 50;
-    var lowerTankHeight = 30;
+    var upperTankHeight = 0;
+    var lowerTankHeight = 0;
     var motorState = false;
     var boosterState = false;
 
@@ -33,10 +30,28 @@ $( document ).ready(function () {
 
         $(toggleBooster).prop('checked', _boosterState).change();
         $(toggleMotor).prop('checked', _motorState).change();
+    });
+
+    connection.on("levels", function (upperLevel, lowerLevel) {
+        upperTankHeight = upperLevel*100;
+        lowerTankHeight = lowerLevel*100;
+
+        if(upperLevel >= 1)
+            upperTankHeight = 100;
         
-        if(iSubmit == 1){
-            alert("Motor/Booster Status Changed");
-        }
+        if(lowerLevel >= 1)
+            lowerTankHeight = 100;
+
+        if(upperLevel <= 0)
+            upperTankHeight = 0;
+        
+        if(lowerLevel <= 0)
+            lowerTankHeight = 0;
+
+        document.getElementById("upper_tank").style.height = upperTankHeight.toString() + "%";
+        document.getElementById("lower_tank").style.height = lowerTankHeight.toString() + "%";
+
+        console.log('Getting Levels: ' + upperTankHeight + " : " + lowerTankHeight);
     });
 
     $('#Load').click(function () {
@@ -44,13 +59,24 @@ $( document ).ready(function () {
         $("#booster_toggle").show();
         $("#submit_toggle").show();
 
-        connection.invoke("Init").catch(function (err) {
+        connection.invoke("GetStates").catch(function (err) {
             return console.error(err.toString());
         });
 
+        getLevel();
+        
         $("#Load").hide();
-        iSubmit = 0;
     });
+
+    async function getLevel() {
+        try {
+            await connection.invoke("GetTankLevels");
+            setTimeout(() => getLevel(), 1000);
+        } catch (err) {
+            console.log(err);
+            setTimeout(() => getLevel(), 1000);
+        }
+    };
 
     connection.start().catch(function (err) {
         return console.error(err.toString());
@@ -65,15 +91,29 @@ $( document ).ready(function () {
     })
 
     $('#Submit').click(function () {
-        onSubmitted = true;
         motorState = $(toggleMotor).prop('checked');
         boosterState = $(toggleBooster).prop('checked');
 
-        connection.invoke("controller", motorState, boosterState).catch(function (err) {
+        connection.invoke("SetStates", motorState, boosterState).catch(function (err) {
             return console.error(err.toString());
         });
     });
 
-    document.getElementById("upper_tank").style.height = upperTankHeight.toString() + "%";
-    document.getElementById("lower_tank").style.height = lowerTankHeight.toString() + "%";
+    connection.invoke("GetTankLevels").catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    async function start() {
+        try {
+            await connection.start();
+            console.log('connected');
+        } catch (err) {
+            console.log(err);
+            setTimeout(() => start(), 5000);
+        }
+    };
+
+    connection.onclose(async () => {
+        await start();
+    });
 });

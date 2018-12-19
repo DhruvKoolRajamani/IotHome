@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-
-
+using System.Threading;
 using IotHome.server.Hubs;
 
 namespace IotHome.server
@@ -10,24 +9,15 @@ namespace IotHome.server
         bool MotorState { get; set; }
         bool BoosterState { get; set; }
 
-        void Add();
-        void Check();
+        double UpperTank { get; set; }
+        double LowerTank { get; set; }
     }
     
     public class HomeRepo : IHomeRepo
     {
-        // private IGpioController _IGpioController;
-        // private GpioPin gpioPin;
-
         private bool _motorState, _boosterState;
-        private readonly int motorPinId = 17;
-        private readonly int boosterPinId = 18;
 
-        enum usedPins
-        {
-            MotorPin = 17,
-            BoosterPin = 18
-        }
+        private double _upperTank, _lowerTank;
 
         public HomeRepo()
         {
@@ -47,19 +37,16 @@ namespace IotHome.server
             set => _boosterState = value;
         }
 
-        private void ReadPin()
+        public double UpperTank
         {
-            
+            get => _upperTank;
+            set => _upperTank = value;
         }
 
-        void IHomeRepo.Check()
+        public double LowerTank
         {
-
-        }
-
-        void IHomeRepo.Add()
-        {
-
+            get => _lowerTank;
+            set => _lowerTank = value;
         }
     }
 }
