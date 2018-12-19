@@ -1,0 +1,58 @@
+﻿<Page
+    x:Class="IotHome.UWPClient.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IotHome.UWPClient"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Height="520" Width="360" Margin="0,0,0,0">
+            <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Stretch" Click="BtnConnect_Click" VerticalAlignment="Center" Margin = "20"/>
+            <TextBox x:Name="tbxConnect" FontWeight="Bold" FontSize="20" TextAlignment="Center" HorizontalAlignment="Stretch" Text="Connection Status" VerticalAlignment="Center" Height="40" Margin="0,0,0,0"  />
+
+            <Grid HorizontalAlignment="Stretch" Height="130" Margin="0,30,0,0" VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.ColumnSpan="2" x:Name="tbkMotor" HorizontalAlignment="Stretch" Text="Motor" TextAlignment="Center" VerticalAlignment="Top" Height="30" FontWeight="Bold" FontSize="20"/>
+                <Grid Grid.Column="0" HorizontalAlignment="Center" Height="50" VerticalAlignment="Top" Width="120" Margin="0,30,0,0">
+                    <Button x:Name="btnMotorOn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin = "2" Click="BtnMotorOn_Click">Motor ON</Button>
+                </Grid>
+                <Grid Grid.Column="1" HorizontalAlignment="Center" Height="50" VerticalAlignment="Top" Width="120" Margin="0,30,0,0">
+                    <Button x:Name="btnMotorOff" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin = "2" Click="BtnMotorOff_Click">Motor OFF</Button>
+                </Grid>
+                <Grid Grid.ColumnSpan="2" HorizontalAlignment="Center" Height="50" VerticalAlignment="Bottom" Width="240" Margin="0,50,0,0">
+                    <Rectangle x:Name="rectMotorStatus" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="White" Margin = "2" />
+                </Grid>
+                <Rectangle x:Name="rectUpperTankBg" Grid.Column="3" Fill="White" Margin = "2"/>
+                <Rectangle x:Name="rectUpperTank" Grid.Column="3" VerticalAlignment="Bottom" MaxHeight="126" Fill="Blue" Margin = "2"/>
+            </Grid>
+
+            <Grid HorizontalAlignment="Stretch" Height="130" Margin="0,30,0,0" VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.ColumnSpan="2" x:Name="tbkBooster" HorizontalAlignment="Stretch" Text="Booster" TextAlignment="Center" VerticalAlignment="Top" Height="30" FontWeight="Bold" FontSize="20"/>
+                <Grid Grid.Column="0" HorizontalAlignment="Center" Height="50" VerticalAlignment="Top" Width="120" Margin="0,30,0,0">
+                    <Button x:Name="btnBoosterOn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin = "2" Click="BtnBoosterOn_Click">Booster ON</Button>
+                </Grid>
+                <Grid Grid.Column="1" HorizontalAlignment="Center" Height="50" VerticalAlignment="Top" Width="120" Margin="0,30,0,0">
+                    <Button x:Name="btnBoosterOff" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin = "2" Click="BtnBoosterOff_Click">Booster OFF</Button>
+                </Grid>
+                <Grid Grid.ColumnSpan="2" HorizontalAlignment="Center" Height="50" VerticalAlignment="Bottom" Width="240" Margin="0,50,0,0">
+                    <Rectangle x:Name="rectBoosterStatus" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="White" Margin = "2" />
+                </Grid>
+                <Rectangle x:Name="rectLowerTankBg" Grid.Column="3" Fill="White" Margin = "2"/>
+                <Rectangle x:Name="rectLowerTank" Grid.Column="3" VerticalAlignment="Bottom" MaxHeight="126" Fill="Blue" Margin = "2"/>
+            </Grid>
+
+        </StackPanel>
+    </Grid>
+</Page>
