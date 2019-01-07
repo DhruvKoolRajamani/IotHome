@@ -32,6 +32,10 @@ $( document ).ready(function () {
         $(toggleMotor).prop('checked', _motorState).change();
     });
 
+    connection.on("errorStatus", function (message) {
+        alert(message);
+    });
+
     connection.on("levels", function (upperLevel, lowerLevel) {
         upperTankHeight = upperLevel*100;
         lowerTankHeight = lowerLevel*100;
