@@ -6,6 +6,7 @@ namespace IotHome.server.Hubs
     public class IotHomeHub : Hub
     {
         private readonly IHomeRepo _repository;
+
         public IotHomeHub(IHomeRepo repository)
         {
             _repository = repository;
@@ -16,6 +17,11 @@ namespace IotHome.server.Hubs
             await Clients.Caller.SendAsync("Status", _repository.MotorState, _repository.BoosterState);
         }
 
+        public async Task ErrorState(string message)
+        {
+            await Clients.Others.SendAsync("ErrorStatus", message);
+        }
+
         public async Task SetStates(bool motorState, bool boosterState)
         {
             _repository.MotorState = motorState;
@@ -23,6 +29,7 @@ namespace IotHome.server.Hubs
 
             await Clients.Others.SendAsync("Status", _repository.MotorState, _repository.BoosterState);
         }
+
         public async Task SetTankLevels(double uppertank, double lowertank)
         {
             _repository.UpperTank = uppertank;

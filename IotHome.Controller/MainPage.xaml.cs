@@ -1,25 +1,14 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using System.Timers;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
-using IotHome.Controller.Sensor;
 using System.Threading;
+using UltrasonicSensor;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -41,8 +30,8 @@ namespace IotHome.Controller
         private double upperTankHeight = 0.0;
         private double lowerTankHeight = 0.0;
 
-        private UltrasonicSensor upperTankSensor;
-        private UltrasonicSensor lowerTankSensor;
+        private Sensor upperTankSensor;
+        private Sensor lowerTankSensor;
 
         public MainPage()
         {
@@ -76,13 +65,44 @@ namespace IotHome.Controller
 
             connection.Closed += async (error) =>
             {
-                tbxConnect.Text = "Restarting Connection...";
+                tbkConnect.Text = "Restarting Connection...";
                 await Task.Delay(new Random().Next(0, 5) * 1000);
                 await connection.StartAsync();
             };
+        }
 
-            upperTankSensor = new UltrasonicSensor(22, 27);
-            lowerTankSensor = new UltrasonicSensor(6, 5);
+        private async void LowerTankSensor_EventGpioStatus(object sender, GpioStatusEventArgs e)
+        {
+            await lbLowerTankStatus.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                lbLowerTankStatus.Items.Add($"Status : {e.Status}");
+            });
+        }
+
+        private async void UpperTankSensor_EventGpioStatus(object sender, GpioStatusEventArgs e)
+        {
+            await lbUpperTankStatus.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                lbUpperTankStatus.Items.Add($"Status : {e.Status}");
+            });
+        }
+
+        private async void LowerTankSensor_EventDistance(object sender, DistanceEventArgs e)
+        {
+            await tbkLowerTankSensor.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                tbkLowerTankSensor.Text = $"Status : {e.Depth}";
+                lowerTankHeight = e.Depth;
+            });
+        }
+
+        private async void UpperTankSensor_EventDistance(object sender, DistanceEventArgs e)
+        {
+            await tbkUpperTankSensor.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                tbkUpperTankSensor.Text = $"Status : {e.Depth}";
+                upperTankHeight = e.Depth;
+            });
         }
 
         private void OnServerCallForLevels(double upperLevel, double lowerLevel)
@@ -116,35 +136,16 @@ namespace IotHome.Controller
             try
             {
                 await connection.StartAsync();
-                tbxConnect.Text = "Connected to Server";
+                tbkConnect.Text = "Connected to Server";
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                tbxConnect.Text = ex.Message;
+                tbkConnect.Text = ex.Message;
             }
 
             btnConnect.Visibility = Visibility.Collapsed;
             await connection.InvokeAsync("GetStates");
-
-            while (true)
-            {
-                await GetLevel();
-            }
-        }
-
-        private async Task GetLevel()
-        {
-            //timer = new Timer(1000);
-            Thread.Sleep(5 * 1000);
-
-            upperTankHeight = upperTankSensor.Distance;
-            tbxUpperTankSensor.Text = upperTankHeight.ToString();
-
-            lowerTankHeight = lowerTankSensor.Distance;
-            tbxLowerTankSensor.Text = lowerTankHeight.ToString();
-
-            await connection.InvokeAsync("SetTankLevels", upperTankHeight, lowerTankHeight);
         }
 
         private async void BtnMotorOn_Click(object sender, RoutedEventArgs e)
@@ -189,6 +190,23 @@ namespace IotHome.Controller
             {
                 rect.Fill = new SolidColorBrush(Windows.UI.Colors.Red);
             }
+        }
+
+        private async void BtnSensor_Click(object sender, RoutedEventArgs e)
+        {
+            upperTankSensor = new Sensor(22, 27);
+            upperTankSensor.Init();
+            upperTankSensor.EventDistance += UpperTankSensor_EventDistance;
+            upperTankSensor.EventGpioStatus += UpperTankSensor_EventGpioStatus;
+
+            lowerTankSensor = new Sensor(6, 5);
+            lowerTankSensor.Init();
+            lowerTankSensor.EventDistance += LowerTankSensor_EventDistance;
+            lowerTankSensor.EventGpioStatus += LowerTankSensor_EventGpioStatus;
+
+            upperTankSensor.Ping();
+            lowerTankSensor.Ping();
+            await connection.InvokeAsync("SetTankLevels", upperTankHeight, lowerTankHeight);
         }
     }
 }
