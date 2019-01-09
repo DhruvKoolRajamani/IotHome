@@ -10,28 +10,30 @@ namespace Pumps
 {
     public class PumpStatusEventArgs : EventArgs
     {
-        public bool Status { get; set; }
+        public string Status { get; set; }
+        public bool State { get; set; }
 
-        public PumpStatusEventArgs(bool status)
+        public PumpStatusEventArgs(string status, bool state)
         {
             Status = status;
+            State = state;
         }
     }
 
     public class Pump
     {
         private bool controllerFlag = false;
-        private bool state = false;
+        private bool _state = false;
 
         public bool State
         {
             get
             {
-                return state;
+                return _state;
             }
             set
             {
-                state = value;
+                _state = value;
             }
         }
 
@@ -44,14 +46,15 @@ namespace Pumps
         private GpioOpenStatus gpioOpenStatus;
 
         private GpioPinValue pinValue;
-
+        
         public event EventHandler<PumpStatusEventArgs> EventPumpStatus = delegate { };
 
-        public Pump(int pinid, bool _state)
+        private string _name = "";
+
+        public Pump(int pinid, string name)
         {
             pinId = pinid;
-
-            state = _state;
+            _name = name;
         }
 
         public void Init()
@@ -75,41 +78,31 @@ namespace Pumps
                 {
                     this.gpioPin.SetDriveMode(GpioPinDriveMode.Input);
                     this.pinValue = this.gpioPin.Read();
-
                     Debug.WriteLine($"pinId - {pinId}; {pinValue}");
+                    if (pinValue == GpioPinValue.Low )
+                        _state = true;
 
-                    if (pinValue == GpioPinValue.High)
-                    {
-                        state = false;
-                    }
-                    else
-                        state = true;
+                    this.gpioPin.SetDriveMode(GpioPinDriveMode.Output);
                 }
-                else
-                    state = false;
             }
-            else
-                state = false;
         }
 
-        public void Actuate(bool _state)
+        public void Actuate(bool state)
         {
             if (controllerFlag)
             {
                 if (gpioOpenStatus == GpioOpenStatus.PinOpened)
                 {
-                    if (_state == false)
-                    {
+                    if (state == false)
                         pinValue = GpioPinValue.High;
-                    }
                     else
                         pinValue = GpioPinValue.Low;
 
-                    this.gpioPin.SetDriveMode(GpioPinDriveMode.Output);
                     this.gpioPin.Write(pinValue);
-                    Debug.WriteLine($"Actuate: {this.gpioPin.PinNumber} ==> {pinValue}");
+                    _state = state;
+                    Debug.WriteLine($"Actuate: {_name} ==> {pinValue}");
+                    EventPumpStatus(this, new PumpStatusEventArgs($"Pump: {_name} is switching : {state}", state));
                 }
-                state = _state;
             }
         }
     }

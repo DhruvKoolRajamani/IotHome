@@ -11,17 +11,19 @@ namespace Levels
 {
     public class LevelsEventArgs : EventArgs
     {
+        private float depth;
         public int Level { get; set; }
-        public float Depth { get; set; }
+        public float Depth { get { return GetLevel(); }}
 
         public LevelsEventArgs(int level)
         {
             Level = level;
         }
 
-        public void GetLevel()
+        private float GetLevel()
         {
-            Depth = (100.0f / 3.0f) * Level;
+            depth = (100.0f / 3.0f) * Level;
+            return depth;
         }
     }
 
@@ -88,7 +90,8 @@ namespace Levels
                 {
                     if (gpioController.TryOpenPin(LevelPins[i], GpioSharingMode.Exclusive, out gpioLevels[i], out gpioOpenStatus[i+1]))
                     {
-                        gpioLevels[i].SetDriveMode(GpioPinDriveMode.Input);
+                        gpioLevels[i].SetDriveMode(GpioPinDriveMode.InputPullDown);
+                        gpioLevels[i].DebounceTimeout = TimeSpan.FromMilliseconds(50);
                         gpioLevels[i].ValueChanged += LevelValueChanged;
                     }
                 }
@@ -101,8 +104,7 @@ namespace Levels
 
         public void Ping()
         {
-            n = 0;
-            check.Add(n);
+            _max  = 0;
 
             Debug.WriteLine($"Trigger");
 
@@ -110,36 +112,28 @@ namespace Levels
             delayMilli(100);
             gpioTrigger.Write(GpioPinValue.Low);
 
-            n = check.Max();
-            check.Clear();
-            EventLevels(this, new LevelsEventArgs(n));
+            EventLevels(this, new LevelsEventArgs(_max));
         }
-
+        int _max = 0;
         private void LevelValueChanged(GpioPin sender, GpioPinValueChangedEventArgs args)
         {
+            
             if (args.Edge == GpioPinEdge.RisingEdge)
             {
                 if (sender.PinNumber == LevelPins[0])
-                {
                     n = 1;
-                    check.Add(n);
-                }
-
-                sender.DebounceTimeout = TimeSpan.FromMilliseconds(50);
 
                 if (sender.PinNumber == LevelPins[1])
-                {
                     n = 2;
-                    check.Add(n);
-                    sender.DebounceTimeout = TimeSpan.FromMilliseconds(50);
-                }
 
                 if (sender.PinNumber == LevelPins[2])
-                {
                     n = 3;
-                    check.Add(n);
-                    sender.DebounceTimeout = TimeSpan.FromMilliseconds(50);
-                }
+
+                _max = Math.Max(_max,n);
+                
+               // sender.DebounceTimeout = TimeSpan.FromMilliseconds(50);
+                
+                Debug.WriteLine($"{sender.PinNumber} + {args.Edge} + {n}");
             }
         }
 

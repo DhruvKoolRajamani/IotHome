@@ -19,9 +19,6 @@ namespace IotHome.BackgroundLevelController
 {
     public sealed class StartupTask : IBackgroundTask
     {
-        private bool motorState;
-        private bool boosterState;
-
         private Pump Motor;
         private Pump Booster;
 
@@ -51,19 +48,18 @@ namespace IotHome.BackgroundLevelController
 
         private void InitPumps()
         {
-            Motor = new Pump(17, motorState); //Red
+            Motor = new Pump(17, "Motor"); //Red
             Motor.Init();
+            Motor.EventPumpStatus += EventPumpStatus; ;
 
-            Booster = new Pump(27, boosterState); //Green
+            Booster = new Pump(27, "Booster"); //Green
             Booster.Init();
+            Booster.EventPumpStatus += EventPumpStatus;
         }
 
         private async void EventPumpStatus(object sender, PumpStatusEventArgs e)
         {
-            boosterState = e.Status;
-            motorState = e.Status;
-
-            await connection.InvokeAsync("SetStates", motorState, boosterState);
+            await connection.InvokeAsync("SetStates", Motor.State, Booster.State);
         }
 
         private async void InitSignalR()
@@ -86,16 +82,7 @@ namespace IotHome.BackgroundLevelController
 
             connection.On<bool, bool>("Status", (motorstate, boosterstate) =>
             {
-                motorState = motorstate;
-                boosterState = boosterstate;
-
-                if (Motor.State != motorState)
-                {
-                    Motor.Actuate(motorState);
-                }
-
-                if (Booster.State != boosterState)
-                    Booster.Actuate(boosterState);
+                Debug.WriteLine($"OnConnect motor:{motorstate} booster:{boosterstate}");
             });
 
             await connection.StartAsync();
@@ -104,7 +91,6 @@ namespace IotHome.BackgroundLevelController
         
         private async void LowerTankLevel_EventLevels(object sender, LevelsEventArgs e)
         {
-            e.GetLevel();
             lowerTankDepth = e.Depth / 100.0f;
             Debug.WriteLine($"Lower Depth: {e.Depth}");
             await connection.InvokeAsync("SetTankLevels", upperTankDepth, lowerTankDepth);
@@ -112,7 +98,6 @@ namespace IotHome.BackgroundLevelController
 
         private async void UpperTankLevel_EventLevels(object sender, LevelsEventArgs e)
         {
-            e.GetLevel();
             upperTankDepth = e.Depth / 100.0f;
             Debug.WriteLine($"Upper Depth: {e.Depth}");
             await connection.InvokeAsync("SetTankLevels", upperTankDepth, lowerTankDepth);
